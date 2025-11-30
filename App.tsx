@@ -55,8 +55,9 @@ const AVAILABLE_MODULES: Record<ModuleType, Omit<InfrastructureModule, 'id'>> = 
 
 const STORAGE_KEY = 'crypto_genesis_save_v2';
 const API_KEY_STORAGE = 'crypto_genesis_api_key';
-// Check if a default key is available from environment
-const DEFAULT_API_KEY = process.env.API_KEY;
+
+// --- اصلاح مهم: حذف process.env که باعث خرابی می‌شد ---
+const DEFAULT_API_KEY = ""; 
 
 const App: React.FC = () => {
   // Setup State
@@ -87,11 +88,11 @@ const App: React.FC = () => {
   const [news, setNews] = useState<string>("Welcome to CryptoGenesis. Market is stable.");
 
   useEffect(() => {
-     const savedKey = localStorage.getItem(API_KEY_STORAGE);
-     if (savedKey) setUserApiKey(savedKey);
-     
-     const saved = localStorage.getItem(STORAGE_KEY);
-     if (saved) setSaveFound(true);
+      const savedKey = localStorage.getItem(API_KEY_STORAGE);
+      if (savedKey) setUserApiKey(savedKey);
+      
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) setSaveFound(true);
   }, []);
 
   // Save game automatically on state change
@@ -103,7 +104,7 @@ const App: React.FC = () => {
         lastSaved: new Date().toISOString()
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(saveData));
-      
+       
       // Visual feedback delay
       const timer = setTimeout(() => setIsSaving(false), 800);
       return () => clearTimeout(timer);
@@ -244,7 +245,7 @@ const App: React.FC = () => {
       console.error(error);
       setGameState(prev => ({ 
           ...prev, 
-          isLoading: false,
+          isLoading: false, 
           history: [...prev.history, { 
             id: 'error-init', 
             turn: 0, 
@@ -356,15 +357,15 @@ const App: React.FC = () => {
   // Render Setup Screen
   if (setupMode) {
     return (
-      <div className={`min-h-screen bg-crypto-dark flex items-center justify-center text-crypto-text p-4 relative overflow-hidden ${getFontClass()}`}>
+      <div className={`min-h-screen bg-crypto-dark bg-gray-950 flex items-center justify-center text-crypto-text text-white p-4 relative overflow-hidden ${getFontClass()}`}>
         <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-purple-900/10 blur-[120px] rounded-full"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-green-900/10 blur-[120px] rounded-full"></div>
 
         <div className="max-w-xl w-full flex flex-col gap-6 z-10">
-            <div className="bg-crypto-panel border border-gray-800 rounded-2xl p-8 shadow-2xl">
+            <div className="bg-crypto-panel bg-gray-900 border border-gray-800 rounded-2xl p-8 shadow-2xl">
             <div className="text-center mb-8">
                 <div className="w-16 h-16 bg-gray-900 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-gray-700 shadow-lg shadow-crypto-accent/10">
-                <Hexagon className="text-crypto-accent" size={32} />
+                <Hexagon className="text-crypto-accent text-yellow-500" size={32} />
                 </div>
                 <h1 className="text-3xl font-bold text-white mb-2">CRYPTO GENESIS</h1>
                 <p className="text-gray-500 text-sm tracking-widest uppercase">Decentralized Simulation Engine</p>
@@ -408,7 +409,7 @@ const App: React.FC = () => {
                         onClick={() => setSettings(p => ({ ...p, language: lang.id as LanguageCode }))}
                         className={`p-3 rounded-lg border text-sm transition-all ${lang.font} ${
                         settings.language === lang.id 
-                            ? 'bg-crypto-accent text-crypto-dark border-crypto-accent font-bold' 
+                            ? 'bg-crypto-accent bg-yellow-500 text-crypto-dark text-black border-crypto-accent border-yellow-500 font-bold' 
                             : 'bg-gray-900 border-gray-700 text-gray-400 hover:border-gray-500'
                         }`}
                     >
@@ -421,17 +422,17 @@ const App: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {/* Founder Name - New Field */}
                   <div className="md:col-span-3">
-                     <label className="block text-xs font-bold text-gray-400 mb-2 uppercase flex items-center gap-2">
+                      <label className="block text-xs font-bold text-gray-400 mb-2 uppercase flex items-center gap-2">
                         <User size={14} /> Founder Name
-                     </label>
-                     <input 
+                      </label>
+                      <input 
                         type="text" 
                         value={settings.founderName}
                         onChange={(e) => setSettings(p => ({ ...p, founderName: e.target.value }))}
                         placeholder="e.g. Satoshi Nakamoto"
                         className="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white focus:border-crypto-accent focus:outline-none transition-colors"
                         dir="auto"
-                     />
+                      />
                   </div>
 
                   <div className="md:col-span-2">
@@ -462,7 +463,7 @@ const App: React.FC = () => {
                 <button 
                     onClick={() => handleStartGame()}
                     disabled={!settings.projectName || !settings.ticker || !settings.founderName || (!userApiKey && !DEFAULT_API_KEY)}
-                    className="w-full py-4 bg-gradient-to-r from-crypto-accent to-green-500 hover:from-green-400 hover:to-green-600 text-crypto-dark font-bold rounded-xl transition-all transform hover:scale-[1.02] shadow-lg shadow-crypto-accent/20 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full py-4 bg-gradient-to-r from-crypto-accent from-yellow-500 to-green-500 hover:from-green-400 hover:to-green-600 text-crypto-dark text-black font-bold rounded-xl transition-all transform hover:scale-[1.02] shadow-lg shadow-crypto-accent/20 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     <Play size={20} fill="currentColor" />
                     INITIALIZE GENESIS BLOCK
@@ -502,7 +503,7 @@ const App: React.FC = () => {
 
   // Main Game Loop
   return (
-    <div className={`min-h-screen bg-crypto-dark text-crypto-text ${getFontClass()} selection:bg-crypto-accent selection:text-crypto-dark flex flex-col items-center`}>
+    <div className={`min-h-screen bg-crypto-dark bg-gray-950 text-crypto-text text-white ${getFontClass()} selection:bg-crypto-accent selection:text-crypto-dark flex flex-col items-center`}>
       
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-crypto-secondary/5 blur-[100px] rounded-full"></div>
@@ -515,15 +516,15 @@ const App: React.FC = () => {
         <header className="flex flex-col gap-2 mb-4">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div className="flex items-center gap-3">
-              <div className="bg-gradient-to-br from-crypto-accent to-blue-500 p-2 rounded-lg shadow-lg shadow-crypto-accent/20">
-                <Hexagon className="text-crypto-dark" size={24} />
+              <div className="bg-gradient-to-br from-crypto-accent from-yellow-500 to-blue-500 p-2 rounded-lg shadow-lg shadow-crypto-accent/20">
+                <Hexagon className="text-crypto-dark text-black" size={24} />
               </div>
               <div>
                 <h1 className="text-xl md:text-2xl font-bold tracking-tighter text-white flex items-center gap-2">
-                  {settings.projectName} <span className="text-crypto-dim text-sm font-mono bg-gray-900 px-2 py-0.5 rounded border border-gray-800">${settings.ticker}</span>
+                  {settings.projectName} <span className="text-crypto-dim text-gray-400 text-sm font-mono bg-gray-900 px-2 py-0.5 rounded border border-gray-800">${settings.ticker}</span>
                 </h1>
                 <div className="flex items-center gap-2 text-xs text-gray-500 font-mono">
-                  <span className="text-crypto-accent">● LIVE</span>
+                  <span className="text-crypto-accent text-yellow-500">● LIVE</span>
                   <span>ERA: {gameState.stats.era}</span>
                   <span className="hidden md:inline text-gray-600">| FOUNDER: {settings.founderName}</span>
                 </div>
@@ -557,8 +558,8 @@ const App: React.FC = () => {
           
           {/* News Ticker */}
           <div className="w-full bg-black/40 border-y border-gray-800/50 py-1 overflow-hidden relative flex justify-between">
-             <div className="flex items-center overflow-hidden flex-1 relative">
-                <div className="bg-crypto-accent/10 px-2 flex items-center text-[10px] font-bold text-crypto-accent uppercase tracking-wider shrink-0 z-10 mr-2 h-full">
+              <div className="flex items-center overflow-hidden flex-1 relative">
+                <div className="bg-crypto-accent/10 px-2 flex items-center text-[10px] font-bold text-crypto-accent text-yellow-500 uppercase tracking-wider shrink-0 z-10 mr-2 h-full">
                 NEWS
                 </div>
                 <div className="whitespace-nowrap animate-[marquee_20s_linear_infinite] text-xs text-gray-400 font-mono flex items-center">
@@ -567,7 +568,7 @@ const App: React.FC = () => {
              </div>
              
              {/* Autosave Indicator */}
-             <div className={`flex items-center gap-1 text-[10px] font-mono transition-opacity duration-300 ml-4 px-2 ${isSaving ? 'opacity-100 text-crypto-accent' : 'opacity-0'}`}>
+             <div className={`flex items-center gap-1 text-[10px] font-mono transition-opacity duration-300 ml-4 px-2 ${isSaving ? 'opacity-100 text-crypto-accent text-yellow-500' : 'opacity-0'}`}>
                 <CheckCircle2 size={10} /> SAVED
              </div>
           </div>
@@ -601,19 +602,19 @@ const App: React.FC = () => {
                  <div className="absolute bottom-4 left-0 right-0 p-4 flex justify-center z-20 pointer-events-none">
                     <div className="pointer-events-auto shadow-2xl">
                       {gameState.gameOver ? (
-                         <button onClick={() => setSetupMode(true)} className="px-8 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold transition-all transform hover:scale-105 flex items-center gap-2">
+                          <button onClick={() => setSetupMode(true)} className="px-8 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold transition-all transform hover:scale-105 flex items-center gap-2">
                            <RotateCcw size={18} /> REBOOT SYSTEM
-                         </button>
-                      ) : (
-                         <div className="flex gap-2">
-                            <button onClick={() => handleStartGame(gameState.stats.era + 1, true)} className="px-6 py-3 bg-crypto-secondary hover:bg-purple-600 text-white rounded-lg font-bold transition-all transform hover:scale-105 flex items-center gap-2 border border-purple-400">
-                               <Hexagon size={18} /> FORK & EVOLVE (ERA {gameState.stats.era + 1})
-                            </button>
-                            <button onClick={() => setSetupMode(true)} className="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg font-bold transition-colors">
+                          </button>
+                       ) : (
+                          <div className="flex gap-2">
+                             <button onClick={() => handleStartGame(gameState.stats.era + 1, true)} className="px-6 py-3 bg-crypto-secondary hover:bg-purple-600 text-white rounded-lg font-bold transition-all transform hover:scale-105 flex items-center gap-2 border border-purple-400">
+                                <Hexagon size={18} /> FORK & EVOLVE (ERA {gameState.stats.era + 1})
+                             </button>
+                             <button onClick={() => setSetupMode(true)} className="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg font-bold transition-colors">
                                RETIRE
-                            </button>
-                         </div>
-                      )}
+                             </button>
+                          </div>
+                       )}
                     </div>
                  </div>
               )}
