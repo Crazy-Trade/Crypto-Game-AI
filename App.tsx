@@ -55,11 +55,12 @@ const AVAILABLE_MODULES: Record<ModuleType, Omit<InfrastructureModule, 'id'>> = 
 
 const STORAGE_KEY = 'crypto_genesis_save_v2';
 const API_KEY_STORAGE = 'crypto_genesis_api_key';
-
-// --- اصلاح مهم: حذف process.env که باعث خرابی می‌شد ---
 const DEFAULT_API_KEY = ""; 
 
 const App: React.FC = () => {
+  // Debug log to check if React is mounting
+  console.log("🚀 App Component is Rendering...");
+
   // Setup State
   const [setupMode, setSetupMode] = useState(true);
   const [viewMode, setViewMode] = useState<'terminal' | 'infra'>('terminal');
@@ -357,7 +358,11 @@ const App: React.FC = () => {
   // Render Setup Screen
   if (setupMode) {
     return (
-      <div className={`min-h-screen bg-crypto-dark bg-gray-950 flex items-center justify-center text-crypto-text text-white p-4 relative overflow-hidden ${getFontClass()}`}>
+      // Added inline styles to FORCE visibility if Tailwind fails
+      <div 
+        style={{ backgroundColor: '#111827', color: 'white', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}
+        className={`min-h-screen bg-crypto-dark bg-gray-950 flex items-center justify-center text-crypto-text text-white p-4 relative overflow-hidden ${getFontClass()}`}
+      >
         <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-purple-900/10 blur-[120px] rounded-full"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-green-900/10 blur-[120px] rounded-full"></div>
 
@@ -503,7 +508,11 @@ const App: React.FC = () => {
 
   // Main Game Loop
   return (
-    <div className={`min-h-screen bg-crypto-dark bg-gray-950 text-crypto-text text-white ${getFontClass()} selection:bg-crypto-accent selection:text-crypto-dark flex flex-col items-center`}>
+    // Added inline styles here too
+    <div 
+      style={{ backgroundColor: '#111827', color: 'white', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+      className={`min-h-screen bg-crypto-dark bg-gray-950 text-crypto-text text-white ${getFontClass()} selection:bg-crypto-accent selection:text-crypto-dark flex flex-col items-center`}
+    >
       
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-crypto-secondary/5 blur-[100px] rounded-full"></div>
